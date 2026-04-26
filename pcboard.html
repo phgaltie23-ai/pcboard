@@ -6,287 +6,90 @@
 <title>PCBoard — Penta Chess</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  
-  body {
-    background: #0a0a0a;
-    color: #e8e8e8;
-    font-family: 'Georgia', serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+  body { background:#0a0a0a; color:#e8e8e8; font-family:'Georgia',serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; }
+  h1 { font-size:1.8rem; letter-spacing:0.3em; color:#c8b89a; padding:18px 0 4px; text-transform:uppercase; }
+  #subtitle { font-size:0.75rem; letter-spacing:0.25em; color:#555; margin-bottom:14px; }
 
-  h1 {
-    font-size: 1.8rem;
-    letter-spacing: 0.3em;
-    color: #c8b89a;
-    padding: 18px 0 4px;
-    text-transform: uppercase;
-  }
+  #lobby { display:flex; flex-direction:column; align-items:center; gap:14px; margin-top:30px; width:340px; }
+  #lobby input { width:100%; padding:10px 14px; background:#1a1a1a; border:1px solid #333; color:#e8e8e8; font-size:1rem; border-radius:4px; text-align:center; letter-spacing:0.1em; }
 
-  #subtitle {
-    font-size: 0.75rem;
-    letter-spacing: 0.25em;
-    color: #555;
-    margin-bottom: 14px;
-  }
+  .btn { width:100%; padding:12px; border:none; border-radius:4px; font-size:1rem; letter-spacing:0.15em; cursor:pointer; text-transform:uppercase; transition:opacity 0.2s; }
+  .btn:hover { opacity:0.85; }
+  .btn-primary   { background:#c8b89a; color:#0a0a0a; font-weight:bold; }
+  .btn-secondary { background:#1e1e1e; color:#c8b89a; border:1px solid #c8b89a; }
+  .btn-danger    { background:#3a1a1a; color:#e88; border:1px solid #e88; }
+  .btn-reveal    { background:#2a1a3a; color:#c8a8e8; border:2px solid #c8a8e8; font-size:0.85rem; letter-spacing:0.2em; }
+  .btn-reveal:disabled { opacity:0.35; cursor:not-allowed; }
 
-  /* LOBBY */
-  #lobby {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    margin-top: 30px;
-    width: 340px;
-  }
+  #room-info { background:#111; border:1px solid #333; border-radius:6px; padding:16px; width:100%; text-align:center; }
+  #room-code-display { font-size:2rem; letter-spacing:0.4em; color:#c8b89a; font-weight:bold; }
+  #room-status { font-size:0.8rem; color:#666; margin-top:6px; letter-spacing:0.1em; }
 
-  #lobby input {
-    width: 100%;
-    padding: 10px 14px;
-    background: #1a1a1a;
-    border: 1px solid #333;
-    color: #e8e8e8;
-    font-size: 1rem;
-    border-radius: 4px;
-    text-align: center;
-    letter-spacing: 0.1em;
-  }
+  #element-picker { display:none; flex-direction:column; align-items:center; gap:12px; margin-top:10px; width:340px; }
+  #element-picker h2 { color:#c8b89a; letter-spacing:0.2em; font-size:1rem; text-transform:uppercase; }
+  .picker-note { font-size:0.7rem; color:#666; letter-spacing:0.08em; text-align:center; line-height:1.6; border:1px solid #222; padding:8px 12px; border-radius:4px; width:100%; }
+  .element-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; width:100%; }
+  .element-btn { padding:10px 4px; border-radius:6px; border:2px solid transparent; cursor:pointer; font-size:1.4rem; text-align:center; background:#1a1a1a; transition:all 0.2s; }
+  .element-btn:hover { transform:scale(1.08); }
+  .element-btn.selected { border-color:#c8b89a; background:#2a2416; }
+  .element-btn span { display:block; font-size:0.55rem; letter-spacing:0.05em; color:#888; margin-top:2px; }
 
-  .btn {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    letter-spacing: 0.15em;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: opacity 0.2s;
-  }
-  .btn:hover { opacity: 0.85; }
-  .btn-primary { background: #c8b89a; color: #0a0a0a; font-weight: bold; }
-  .btn-secondary { background: #1e1e1e; color: #c8b89a; border: 1px solid #c8b89a; }
-  .btn-danger { background: #3a1a1a; color: #e88; border: 1px solid #e88; }
+  #game-area { display:none; flex-direction:column; align-items:center; width:100%; max-width:640px; padding:0 10px; }
+  #status-bar { width:100%; display:flex; justify-content:space-between; align-items:center; padding:8px 4px; font-size:0.75rem; letter-spacing:0.1em; color:#888; border-bottom:1px solid #1e1e1e; margin-bottom:8px; }
+  #turn-indicator { font-size:0.85rem; color:#c8b89a; letter-spacing:0.15em; text-align:center; min-height:22px; }
 
-  #room-info {
-    background: #111;
-    border: 1px solid #333;
-    border-radius: 6px;
-    padding: 16px;
-    width: 100%;
-    text-align: center;
-  }
-  #room-code-display {
-    font-size: 2rem;
-    letter-spacing: 0.4em;
-    color: #c8b89a;
-    font-weight: bold;
-  }
-  #room-status { font-size: 0.8rem; color: #666; margin-top: 6px; letter-spacing: 0.1em; }
+  #reveal-banner { display:none; width:100%; background:#1a0f2a; border:1px solid #c8a8e8; border-radius:6px; padding:12px 16px; margin-bottom:10px; text-align:center; }
+  #reveal-banner p { font-size:0.75rem; color:#c8a8e8; letter-spacing:0.12em; margin-bottom:10px; line-height:1.6; }
+  #reveal-status { font-size:0.7rem; color:#666; letter-spacing:0.08em; margin-top:8px; min-height:18px; }
 
-  /* ELEMENT PICKER */
-  #element-picker {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    margin-top: 10px;
-    width: 340px;
-  }
-  #element-picker h2 { color: #c8b89a; letter-spacing: 0.2em; font-size: 1rem; text-transform: uppercase; }
-  .element-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-    width: 100%;
-  }
-  .element-btn {
-    padding: 10px 4px;
-    border-radius: 6px;
-    border: 2px solid transparent;
-    cursor: pointer;
-    font-size: 1.4rem;
-    text-align: center;
-    background: #1a1a1a;
-    transition: all 0.2s;
-  }
-  .element-btn:hover { transform: scale(1.08); }
-  .element-btn.selected { border-color: #c8b89a; background: #2a2416; }
-  .element-btn span { display: block; font-size: 0.55rem; letter-spacing: 0.05em; color: #888; margin-top: 2px; }
+  #reveal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.96); align-items:center; justify-content:center; z-index:200; flex-direction:column; gap:28px; }
+  #reveal-overlay h2 { font-size:0.9rem; letter-spacing:0.5em; color:#666; text-transform:uppercase; }
+  #reveal-cards { display:flex; gap:50px; align-items:center; }
+  .reveal-card { display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .reveal-sole { font-size:4.5rem; animation:soleIn 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  .reveal-el-name { font-size:0.75rem; letter-spacing:0.25em; color:#888; text-transform:uppercase; }
+  .reveal-player-name { font-size:0.8rem; letter-spacing:0.15em; color:#c8b89a; }
+  .reveal-vs { font-size:1.8rem; color:#2a2a2a; }
+  @keyframes soleIn { from{opacity:0;transform:scale(0.3) rotateY(180deg);} to{opacity:1;transform:scale(1) rotateY(0);} }
 
-  /* GAME AREA */
-  #game-area {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 640px;
-    padding: 0 10px;
-  }
+  #players-panel { display:flex; justify-content:space-between; width:100%; margin-bottom:8px; gap:8px; }
+  .player-card { flex:1; background:#111; border:1px solid #222; border-radius:6px; padding:8px 10px; font-size:0.75rem; }
+  .player-card.active-player { border-color:#c8b89a; }
+  .player-name { color:#c8b89a; font-size:0.8rem; letter-spacing:0.1em; }
+  .player-element { font-size:1.2rem; min-height:1.5rem; }
+  .player-captured { color:#555; font-size:0.65rem; margin-top:2px; }
 
-  #status-bar {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 4px;
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
-    color: #888;
-    border-bottom: 1px solid #1e1e1e;
-    margin-bottom: 8px;
-  }
-  #turn-indicator {
-    font-size: 0.85rem;
-    color: #c8b89a;
-    letter-spacing: 0.15em;
-    text-align: center;
-    min-height: 22px;
-  }
+  #board { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; width:100%; background:#0f0f0f; padding:6px; border-radius:8px; border:1px solid #222; }
+  .cell { aspect-ratio:1; border-radius:4px; display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:all 0.15s; border:2px solid transparent; background:#161616; }
+  .cell.light { background:#1c1c1c; }
+  .cell.dark  { background:#141414; }
+  .cell:hover { border-color:#444; }
+  .cell.selected     { border-color:#c8b89a; background:#2a2416 !important; }
+  .cell.valid-move   { border-color:#4a7a4a; background:#1a2a1a !important; }
+  .cell.valid-move::after { content:''; position:absolute; width:28%; height:28%; border-radius:50%; background:#4a7a4a; opacity:0.7; }
+  .cell.valid-capture{ border-color:#8a3a3a; background:#2a1a1a !important; }
+  .cell.last-move    { border-color:#445 !important; }
+  .cell.locked       { cursor:not-allowed; }
 
-  /* PLAYERS PANEL */
-  #players-panel {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-bottom: 8px;
-    gap: 8px;
-  }
-  .player-card {
-    flex: 1;
-    background: #111;
-    border: 1px solid #222;
-    border-radius: 6px;
-    padding: 8px 10px;
-    font-size: 0.75rem;
-  }
-  .player-card.active-player { border-color: #c8b89a; }
-  .player-name { color: #c8b89a; font-size: 0.8rem; letter-spacing: 0.1em; }
-  .player-element { font-size: 1.2rem; }
-  .player-captured { color: #555; font-size: 0.65rem; margin-top: 2px; }
+  .piece { font-size:clamp(0.9rem,3.2vw,1.5rem); line-height:1; user-select:none; filter:drop-shadow(0 1px 2px rgba(0,0,0,0.8)); }
+  .piece.secret { opacity:0.5; filter:grayscale(1) drop-shadow(0 1px 2px rgba(0,0,0,0.8)); }
 
-  /* BOARD */
-  #board-wrap {
-    position: relative;
-    width: 100%;
-  }
+  #log { width:100%; max-height:80px; overflow-y:auto; background:#0d0d0d; border:1px solid #1e1e1e; border-radius:4px; padding:6px 10px; margin-top:6px; font-size:0.7rem; color:#555; letter-spacing:0.05em; }
+  #log p { margin:1px 0; }
+  #log p:last-child { color:#888; }
 
-  #board {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 3px;
-    width: 100%;
-    background: #0f0f0f;
-    padding: 6px;
-    border-radius: 8px;
-    border: 1px solid #222;
-  }
+  #game-over { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); align-items:center; justify-content:center; z-index:100; flex-direction:column; gap:18px; }
+  #game-over h2 { font-size:2rem; color:#c8b89a; letter-spacing:0.3em; text-align:center; }
+  #game-over p  { color:#888; letter-spacing:0.1em; text-align:center; }
 
-  .cell {
-    aspect-ratio: 1;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: clamp(1rem, 3.5vw, 1.6rem);
-    position: relative;
-    transition: all 0.15s;
-    border: 2px solid transparent;
-    background: #161616;
-  }
+  #msg  { min-height:18px; font-size:0.75rem; color:#888; text-align:center; letter-spacing:0.1em; }
+  #msg2 { min-height:18px; font-size:0.75rem; color:#888; text-align:center; letter-spacing:0.1em; }
+  #msg.error { color:#e88; }
+  .sep { width:100%; border:none; border-top:1px solid #222; }
 
-  .cell.light { background: #1c1c1c; }
-  .cell.dark  { background: #141414; }
-
-  .cell:hover { border-color: #444; }
-  .cell.selected { border-color: #c8b89a; background: #2a2416 !important; }
-  .cell.valid-move { border-color: #4a7a4a; background: #1a2a1a !important; }
-  .cell.valid-move::after {
-    content: '';
-    position: absolute;
-    width: 28%;
-    height: 28%;
-    border-radius: 50%;
-    background: #4a7a4a;
-    opacity: 0.7;
-  }
-  .cell.valid-capture { border-color: #8a3a3a; background: #2a1a1a !important; }
-  .cell.last-move { border-color: #556 !important; }
-
-  .piece {
-    font-size: clamp(1rem, 3.5vw, 1.6rem);
-    line-height: 1;
-    user-select: none;
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8));
-  }
-  .piece.opponent { opacity: 0.9; }
-
-  /* CAPTURED */
-  #captured-area {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    margin-top: 6px;
-    font-size: 0.7rem;
-    color: #555;
-    letter-spacing: 0.05em;
-  }
-
-  /* GAME LOG */
-  #log {
-    width: 100%;
-    max-height: 80px;
-    overflow-y: auto;
-    background: #0d0d0d;
-    border: 1px solid #1e1e1e;
-    border-radius: 4px;
-    padding: 6px 10px;
-    margin-top: 6px;
-    font-size: 0.7rem;
-    color: #555;
-    letter-spacing: 0.05em;
-  }
-  #log p { margin: 1px 0; }
-  #log p:last-child { color: #888; }
-
-  /* GAME OVER */
-  #game-over {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.88);
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    flex-direction: column;
-    gap: 18px;
-  }
-  #game-over h2 { font-size: 2rem; color: #c8b89a; letter-spacing: 0.3em; text-align: center; }
-  #game-over p { color: #888; letter-spacing: 0.1em; text-align: center; }
-
-  #msg { min-height: 18px; font-size: 0.75rem; color: #888; text-align: center; letter-spacing: 0.1em; }
-  #msg.error { color: #e88; }
-  #msg.success { color: #8c8; }
-
-  .sep { width: 100%; border: none; border-top: 1px solid #222; }
-
-  /* LEGEND */
-  #legend {
-    margin-top: 10px;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 4px;
-    width: 100%;
-    font-size: 0.6rem;
-    color: #555;
-    text-align: center;
-    letter-spacing: 0.04em;
-  }
-  .legend-item { padding: 4px 2px; }
-  .legend-item span { display: block; font-size: 1.1rem; }
+  #legend { margin-top:10px; display:grid; grid-template-columns:repeat(5,1fr); gap:4px; width:100%; font-size:0.6rem; color:#555; text-align:center; letter-spacing:0.04em; }
+  .legend-item { padding:4px 2px; }
+  .legend-item span { display:block; font-size:1.1rem; }
 </style>
 </head>
 <body>
@@ -305,25 +108,26 @@
 </div>
 
 <!-- ROOM WAITING -->
-<div id="room-info" style="display:none; width:340px; margin-top:20px;">
+<div id="room-info" style="display:none;width:340px;margin-top:20px;">
   <div style="font-size:0.7rem;color:#555;letter-spacing:0.15em;margin-bottom:6px;">ROOM CODE — SHARE WITH OPPONENT</div>
   <div id="room-code-display">------</div>
   <div id="room-status">Waiting for opponent...</div>
   <button class="btn btn-danger" style="margin-top:12px;font-size:0.75rem;" onclick="leaveRoom()">Cancel</button>
 </div>
 
-<!-- ELEMENT PICKER -->
+<!-- ELEMENT PICKER — secret -->
 <div id="element-picker">
-  <h2>Choose Your Element</h2>
+  <h2>Choose Your King's Element</h2>
+  <div class="picker-note">🔒 Your choice is secret.<br>Elements are revealed simultaneously before the first move.</div>
   <div class="element-grid">
     <div class="element-btn" onclick="selectElement('water')" id="el-water">💧<span>Water</span></div>
-    <div class="element-btn" onclick="selectElement('fire')"  id="el-fire">🔥<span>Fire</span></div>
+    <div class="element-btn" onclick="selectElement('fire')"  id="el-fire" >🔥<span>Fire</span></div>
     <div class="element-btn" onclick="selectElement('earth')" id="el-earth">🌍<span>Earth</span></div>
     <div class="element-btn" onclick="selectElement('metal')" id="el-metal">⚙️<span>Metal</span></div>
-    <div class="element-btn" onclick="selectElement('wood')"  id="el-wood">🎋<span>Wood</span></div>
+    <div class="element-btn" onclick="selectElement('wood')"  id="el-wood" >🎋<span>Wood</span></div>
   </div>
-  <div id="msg2" style="font-size:0.75rem;color:#888;letter-spacing:0.1em;min-height:18px;"></div>
-  <button class="btn btn-primary" onclick="confirmElement()" style="width:200px;">Confirm Choice</button>
+  <div id="msg2"></div>
+  <button class="btn btn-primary" onclick="confirmElement()" style="width:220px;">Seal My King</button>
 </div>
 
 <!-- GAME AREA -->
@@ -333,20 +137,28 @@
     <span id="turn-indicator">—</span>
     <span id="opp-label">Opponent</span>
   </div>
+
+  <!-- REVEAL BANNER -->
+  <div id="reveal-banner">
+    <p>Both Kings are on the board.<br>Show your sole before the first move.</p>
+    <button class="btn btn-reveal" id="reveal-btn" onclick="revealMyKing()" style="width:260px;">♛ Show My King's Sole</button>
+    <div id="reveal-status"></div>
+  </div>
+
   <div id="players-panel">
     <div class="player-card" id="card-me">
-      <div class="player-element" id="my-element-icon">—</div>
-      <div class="player-name" id="my-name-display">—</div>
-      <div class="player-captured" id="my-captured"></div>
+      <div class="player-element" id="my-element-icon">♛</div>
+      <div class="player-name"    id="my-name-display">—</div>
     </div>
     <div class="player-card" id="card-opp">
-      <div class="player-element" id="opp-element-icon">—</div>
-      <div class="player-name" id="opp-name-display">—</div>
-      <div class="player-captured" id="opp-captured"></div>
+      <div class="player-element" id="opp-element-icon">♛</div>
+      <div class="player-name"    id="opp-name-display">—</div>
     </div>
   </div>
-  <div id="board-wrap"><div id="board"></div></div>
+
+  <div id="board"></div>
   <div id="log"></div>
+
   <div id="legend">
     <div class="legend-item"><span>💧</span>Water</div>
     <div class="legend-item"><span>🔥</span>Fire</div>
@@ -357,14 +169,32 @@
   <button class="btn btn-danger" style="margin-top:14px;font-size:0.7rem;width:160px;" onclick="leaveRoom()">Leave Game</button>
 </div>
 
-<!-- GAME OVER OVERLAY -->
+<!-- REVEAL OVERLAY — dramatic simultaneous reveal -->
+<div id="reveal-overlay">
+  <h2>The Sole Is Shown</h2>
+  <div id="reveal-cards">
+    <div class="reveal-card">
+      <div class="reveal-sole" id="reveal-my-sole">?</div>
+      <div class="reveal-el-name" id="reveal-my-el-name">—</div>
+      <div class="reveal-player-name" id="reveal-my-name">—</div>
+    </div>
+    <div class="reveal-vs">vs</div>
+    <div class="reveal-card">
+      <div class="reveal-sole" id="reveal-opp-sole">?</div>
+      <div class="reveal-el-name" id="reveal-opp-el-name">—</div>
+      <div class="reveal-player-name" id="reveal-opp-name">—</div>
+    </div>
+  </div>
+  <button class="btn btn-primary" style="width:240px;" onclick="closeReveal()">Begin — Let Battle Commence</button>
+</div>
+
+<!-- GAME OVER -->
 <div id="game-over">
   <h2 id="go-title">—</h2>
-  <p id="go-sub">—</p>
+  <p  id="go-sub">—</p>
   <button class="btn btn-primary" style="width:200px;" onclick="leaveRoom()">Play Again</button>
 </div>
 
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, deleteDoc, serverTimestamp }
@@ -376,385 +206,351 @@ const firebaseConfig = {
   projectId: "pcboard-30f3c",
   storageBucket: "pcboard-30f3c.firebasestorage.app",
   messagingSenderId: "283957205234",
-  appId: "1:283957205234:web:1fee9ab1341899736cd86b",
-  measurementId: "G-W9ZHVV00F9"
+  appId: "1:283957205234:web:1fee9ab1341899736cd86b"
 };
 
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-// ─── ELEMENT SYSTEM ───────────────────────────────────────────────
 const ELEMENTS = {
-  water: { emoji:'💧', king:'👑💧', color:'#3a6a9a', beats:'fire'  },
-  fire:  { emoji:'🔥', king:'👑🔥', color:'#9a4a1a', beats:'metal' },
-  earth: { emoji:'🌍', king:'👑🌍', color:'#7a6a3a', beats:'water' },
-  metal: { emoji:'⚙️', king:'👑⚙️', color:'#7a7a7a', beats:'wood'  },
-  wood:  { emoji:'🎋', king:'👑🎋', color:'#3a7a4a', beats:'earth' },
+  water:{ emoji:'💧', name:'Water', beats:'fire'  },
+  fire: { emoji:'🔥', name:'Fire',  beats:'metal' },
+  earth:{ emoji:'🌍', name:'Earth', beats:'water' },
+  metal:{ emoji:'⚙️', name:'Metal', beats:'wood'  },
+  wood: { emoji:'🎋', name:'Wood',  beats:'earth' },
 };
 
-// beats(attacker, defender) → attacker wins
-function beats(atk, def) {
-  return ELEMENTS[atk]?.beats === def;
-}
+function beats(atk,def){ return ELEMENTS[atk]?.beats===def; }
 
-// ─── BOARD SETUP ──────────────────────────────────────────────────
-// 7×7 board
-// Player 1 (host) pieces on row 6, king on row 5 center
-// Player 2 (guest) pieces on row 0, king on row 1 center
-
-function buildInitialBoard(el1, el2) {
-  // board[row][col] = {owner:1|2, type:'piece'|'king', element:str} | null
-  const b = Array.from({length:7}, ()=>Array(7).fill(null));
-  // Player 1 — bottom
-  for(let c=0;c<7;c++) b[6][c] = {owner:1, type:'piece', element:el1};
-  b[5][3] = {owner:1, type:'king', element:el1};
-  // Player 2 — top
-  for(let c=0;c<7;c++) b[0][c] = {owner:2, type:'piece', element:el2};
-  b[1][3] = {owner:2, type:'king', element:el2};
+function buildInitialBoard(el1,el2){
+  const b=Array.from({length:7},()=>Array(7).fill(null));
+  for(let c=0;c<7;c++) b[6][c]={owner:1,type:'piece',element:el1};
+  b[5][3]={owner:1,type:'king',element:el1};
+  for(let c=0;c<7;c++) b[0][c]={owner:2,type:'piece',element:el2};
+  b[1][3]={owner:2,type:'king',element:el2};
   return b;
 }
 
-// ─── VALID MOVES ──────────────────────────────────────────────────
-function validMoves(board, row, col, owner) {
-  const piece = board[row][col];
-  if(!piece || piece.owner !== owner) return [];
-  const moves = [];
-  const dirs = piece.type === 'king'
-    ? [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]
-    : (owner===1 ? [[-1,0],[-1,-1],[-1,1]] : [[1,0],[1,-1],[1,1]]);
-
-  for(const [dr,dc] of dirs) {
-    const nr=row+dr, nc=col+dc;
+function validMoves(board,row,col,owner){
+  const piece=board[row][col];
+  if(!piece||piece.owner!==owner) return [];
+  const dirs=piece.type==='king'
+    ?[[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]
+    :(owner===1?[[-1,0],[-1,-1],[-1,1]]:[[1,0],[1,-1],[1,1]]);
+  const moves=[];
+  for(const [dr,dc] of dirs){
+    const nr=row+dr,nc=col+dc;
     if(nr<0||nr>6||nc<0||nc>6) continue;
-    const target = board[nr][nc];
-    if(!target) { moves.push({r:nr,c:nc,capture:false}); continue; }
-    if(target.owner === owner) continue;
-    // capture: attacker beats defender OR king captures anything
-    if(piece.type==='king' || beats(piece.element, target.element) || target.type==='piece') {
-      // elemental rule: can only capture if beats or equal (not beaten)
-      if(beats(target.element, piece.element) && piece.type!=='king') continue;
-      moves.push({r:nr,c:nc,capture:true});
-    }
+    const t=board[nr][nc];
+    if(!t){moves.push({r:nr,c:nc,capture:false});continue;}
+    if(t.owner===owner) continue;
+    if(beats(t.element,piece.element)&&piece.type!=='king') continue;
+    moves.push({r:nr,c:nc,capture:true});
   }
   return moves;
 }
 
-// ─── STATE ────────────────────────────────────────────────────────
-let roomId=null, myRole=null, playerName='', myElement=null, selectedElement=null;
-let board=[], selected=null, highlights=[], myTurn=false, unsub=null;
-let lastMove=null;
+// State
+let roomId=null,myRole=null,playerName='',myElement=null,selectedElement=null;
+let board=[],selected=null,highlights=[],myTurn=false,unsub=null,lastMove=null;
+let bothRevealed=false;
 
-// ─── LOBBY ────────────────────────────────────────────────────────
-window.createRoom = async function() {
-  playerName = document.getElementById('player-name').value.trim() || 'Player 1';
-  roomId = Math.random().toString(36).substr(2,6).toUpperCase();
-  myRole = 1;
-  await setDoc(doc(db,'rooms',roomId), {
+window.createRoom=async function(){
+  playerName=document.getElementById('player-name').value.trim()||'Player 1';
+  roomId=Math.random().toString(36).substr(2,6).toUpperCase();
+  myRole=1;
+  await setDoc(doc(db,'rooms',roomId),{
     status:'waiting',
-    player1:{name:playerName, element:null},
+    player1:{name:playerName,element:null,revealed:false},
     player2:null,
-    board:null,
-    turn:1,
-    created: serverTimestamp(),
-    lastMove:null,
-    winner:null,
-    log:[]
+    board:null,turn:1,created:serverTimestamp(),
+    lastMove:null,winner:null,log:[]
   });
-  showRoomInfo();
-  listenRoom();
+  showRoomInfo();listenRoom();
 };
 
-window.joinRoom = async function() {
-  playerName = document.getElementById('player-name').value.trim() || 'Player 2';
-  const code = document.getElementById('room-input').value.trim().toUpperCase();
-  if(!code) { msg('Enter a room code','error'); return; }
-  const snap = await getDoc(doc(db,'rooms',code));
-  if(!snap.exists()) { msg('Room not found','error'); return; }
-  const data = snap.data();
-  if(data.status!=='waiting') { msg('Room is not available','error'); return; }
-  roomId = code;
-  myRole = 2;
+window.joinRoom=async function(){
+  playerName=document.getElementById('player-name').value.trim()||'Player 2';
+  const code=document.getElementById('room-input').value.trim().toUpperCase();
+  if(!code){msg('Enter a room code','error');return;}
+  const snap=await getDoc(doc(db,'rooms',code));
+  if(!snap.exists()){msg('Room not found','error');return;}
+  if(snap.data().status!=='waiting'){msg('Room not available','error');return;}
+  roomId=code;myRole=2;
   await updateDoc(doc(db,'rooms',roomId),{
-    'player2':{name:playerName, element:null},
-    'status':'picking'
+    player2:{name:playerName,element:null,revealed:false},status:'picking'
   });
-  showRoomInfo();
-  listenRoom();
+  showRoomInfo();listenRoom();
 };
 
-function showRoomInfo() {
+function showRoomInfo(){
   document.getElementById('lobby').style.display='none';
   document.getElementById('room-info').style.display='block';
-  document.getElementById('room-code-display').textContent = roomId;
+  document.getElementById('room-code-display').textContent=roomId;
 }
 
-// ─── FIREBASE LISTENER ────────────────────────────────────────────
-function listenRoom() {
-  unsub = onSnapshot(doc(db,'rooms',roomId), snap => {
-    if(!snap.exists()) { leaveCleanup(); return; }
-    const data = snap.data();
-    handleRoomUpdate(data);
+function listenRoom(){
+  unsub=onSnapshot(doc(db,'rooms',roomId),snap=>{
+    if(!snap.exists()){leaveCleanup();return;}
+    handleRoomUpdate(snap.data());
   });
 }
 
-function handleRoomUpdate(data) {
-  // Opponent joined → show element picker
-  if(data.status==='picking' && !myElement) {
+function handleRoomUpdate(data){
+  // Show picker when both joined
+  if(data.status==='picking'&&!myElement){
     document.getElementById('room-info').style.display='none';
     document.getElementById('element-picker').style.display='flex';
-    const oppName = myRole===1 ? data.player2?.name : data.player1?.name;
-    document.getElementById('msg2').textContent = oppName ? `${oppName} joined. Pick your element.` : 'Pick your element.';
+    const opp=myRole===1?data.player2?.name:data.player1?.name;
+    if(opp) document.getElementById('msg2').textContent=`${opp} joined. Choose secretly.`;
   }
 
-  // Both picked → start game
-  if(data.status==='playing') {
-    if(document.getElementById('element-picker').style.display!=='none') {
-      document.getElementById('element-picker').style.display='none';
+  if(data.status==='playing'){
+    document.getElementById('element-picker').style.display='none';
+    document.getElementById('room-info').style.display='none';
+
+    if(document.getElementById('game-area').style.display!=='flex'){
+      startGame(data);
+    } else {
+      updateGameFromData(data);
     }
-    if(document.getElementById('room-info').style.display!=='none') {
-      document.getElementById('room-info').style.display='none';
+
+    // Reveal logic
+    if(!bothRevealed){
+      const myRev  = myRole===1?data.player1?.revealed:data.player2?.revealed;
+      const oppRev = myRole===1?data.player2?.revealed:data.player1?.revealed;
+      const oppName= myRole===1?data.player2?.name:data.player1?.name;
+
+      document.getElementById('reveal-banner').style.display='block';
+
+      if(myRev){
+        const btn=document.getElementById('reveal-btn');
+        btn.disabled=true;
+        btn.textContent='✓ Sole Shown';
+      }
+
+      if(myRev&&!oppRev){
+        document.getElementById('reveal-status').textContent=`Waiting for ${oppName} to show their sole...`;
+      } else if(!myRev&&oppRev){
+        document.getElementById('reveal-status').textContent=`${oppName} has shown their sole. Your turn.`;
+      } else if(myRev&&oppRev){
+        bothRevealed=true;
+        showRevealOverlay(data);
+      }
     }
-    startGame(data);
   }
 
-  // Update board mid-game
-  if(data.status==='playing' && document.getElementById('game-area').style.display==='flex') {
-    updateGameFromData(data);
-  }
-
-  // Winner
-  if(data.winner) {
-    showGameOver(data);
-  }
+  if(data.winner) showGameOver(data);
 }
 
-// ─── ELEMENT PICKING ──────────────────────────────────────────────
-window.selectElement = function(el) {
-  selectedElement = el;
+window.selectElement=function(el){
+  selectedElement=el;
   document.querySelectorAll('.element-btn').forEach(b=>b.classList.remove('selected'));
   document.getElementById('el-'+el).classList.add('selected');
 };
 
-window.confirmElement = async function() {
-  if(!selectedElement) { document.getElementById('msg2').textContent='Pick an element first'; return; }
-  myElement = selectedElement;
-  const field = myRole===1 ? 'player1.element' : 'player2.element';
-  await updateDoc(doc(db,'rooms',roomId),{ [field]: myElement });
+window.confirmElement=async function(){
+  if(!selectedElement){document.getElementById('msg2').textContent='Choose an element first';return;}
+  myElement=selectedElement;
+  const field=myRole===1?'player1.element':'player2.element';
+  await updateDoc(doc(db,'rooms',roomId),{[field]:myElement});
+  document.getElementById('msg2').textContent='Sealed. Waiting for opponent...';
 
-  // Check if both picked
-  const snap = await getDoc(doc(db,'rooms',roomId));
-  const data = snap.data();
-  const el1 = data.player1?.element;
-  const el2 = data.player2?.element;
-  if(el1 && el2) {
-    const initialBoard = buildInitialBoard(el1, el2);
+  const snap=await getDoc(doc(db,'rooms',roomId));
+  const data=snap.data();
+  const el1=data.player1?.element,el2=data.player2?.element;
+  if(el1&&el2){
     await updateDoc(doc(db,'rooms',roomId),{
       status:'playing',
-      board: JSON.stringify(initialBoard),
+      board:JSON.stringify(buildInitialBoard(el1,el2)),
       turn:1,
-      log:['Game started!']
+      log:['Kings placed. Show your sole before the first move.']
     });
-  } else {
-    document.getElementById('msg2').textContent = 'Waiting for opponent to pick...';
   }
 };
 
-// ─── GAME START ───────────────────────────────────────────────────
-function startGame(data) {
-  board = JSON.parse(data.board);
-  myTurn = data.turn === myRole;
+window.revealMyKing=async function(){
+  const field=myRole===1?'player1.revealed':'player2.revealed';
+  await updateDoc(doc(db,'rooms',roomId),{[field]:true});
+};
 
-  const el1 = data.player1.element;
-  const el2 = data.player2.element;
-  const myEl = myRole===1 ? el1 : el2;
-  const oppEl = myRole===1 ? el2 : el1;
-  const myName = myRole===1 ? data.player1.name : data.player2.name;
-  const oppName = myRole===1 ? data.player2.name : data.player1.name;
+function showRevealOverlay(data){
+  const el1=data.player1.element,el2=data.player2.element;
+  const myEl=myRole===1?el1:el2,oppEl=myRole===1?el2:el1;
+  const myName=myRole===1?data.player1.name:data.player2.name;
+  const oppName=myRole===1?data.player2.name:data.player1.name;
 
-  document.getElementById('my-element-icon').textContent = ELEMENTS[myEl].emoji;
-  document.getElementById('my-name-display').textContent = myName;
-  document.getElementById('opp-element-icon').textContent = ELEMENTS[oppEl].emoji;
-  document.getElementById('opp-name-display').textContent = oppName;
+  document.getElementById('reveal-my-sole').textContent=ELEMENTS[myEl].emoji;
+  document.getElementById('reveal-my-el-name').textContent=ELEMENTS[myEl].name;
+  document.getElementById('reveal-my-name').textContent=myName;
+  document.getElementById('reveal-opp-sole').textContent=ELEMENTS[oppEl].emoji;
+  document.getElementById('reveal-opp-el-name').textContent=ELEMENTS[oppEl].name;
+  document.getElementById('reveal-opp-name').textContent=oppName;
+  document.getElementById('reveal-overlay').style.display='flex';
 
+  // Update player cards
+  document.getElementById('my-element-icon').textContent=ELEMENTS[myEl].emoji;
+  document.getElementById('opp-element-icon').textContent=ELEMENTS[oppEl].emoji;
+}
+
+window.closeReveal=function(){
+  document.getElementById('reveal-overlay').style.display='none';
+  document.getElementById('reveal-banner').style.display='none';
+  // Now allow moves
+  myTurn = (getCurrentTurn()===myRole);
+  renderBoard();
+  updateTurnIndicator();
+};
+
+function getCurrentTurn(){
+  // read from last known board state
+  return myTurn?myRole:(myRole===1?2:1);
+}
+
+function startGame(data){
+  board=JSON.parse(data.board);
+  myTurn=false; // locked until reveal
+  const myName=myRole===1?data.player1.name:data.player2.name;
+  const oppName=myRole===1?data.player2.name:data.player1.name;
+  document.getElementById('my-name-display').textContent=myName;
+  document.getElementById('opp-name-display').textContent=oppName;
+  document.getElementById('my-element-icon').textContent='♛';
+  document.getElementById('opp-element-icon').textContent='♛';
   document.getElementById('game-area').style.display='flex';
-  renderBoard(data);
-  updateTurnIndicator(data.turn, myName, oppName);
+  renderBoard();
+  document.getElementById('turn-indicator').textContent='SHOW YOUR SOLE';
+  document.getElementById('turn-indicator').style.color='#c8a8e8';
   renderLog(data.log||[]);
 }
 
-function updateGameFromData(data) {
-  board = JSON.parse(data.board);
-  myTurn = data.turn === myRole;
-  selected = null;
-  highlights = [];
-  lastMove = data.lastMove;
-
-  const myName = myRole===1 ? data.player1.name : data.player2.name;
-  const oppName = myRole===1 ? data.player2.name : data.player1.name;
-  updateTurnIndicator(data.turn, myName, oppName);
-  renderBoard(data);
+let _currentTurn=1;
+function updateGameFromData(data){
+  board=JSON.parse(data.board);
+  _currentTurn=data.turn;
+  myTurn=data.turn===myRole&&bothRevealed;
+  selected=null;highlights=[];lastMove=data.lastMove;
+  const myName=myRole===1?data.player1.name:data.player2.name;
+  const oppName=myRole===1?data.player2.name:data.player1.name;
+  if(bothRevealed) updateTurnIndicator(data.turn,myName,oppName);
+  renderBoard();
   renderLog(data.log||[]);
 }
 
-// ─── RENDER ───────────────────────────────────────────────────────
-function renderBoard(data) {
-  const boardEl = document.getElementById('board');
-  boardEl.innerHTML='';
-  // For player 2 flip the board visually
-  const rows = myRole===2 ? [...Array(7).keys()].reverse() : [...Array(7).keys()];
-  const cols = myRole===2 ? [...Array(7).keys()].reverse() : [...Array(7).keys()];
-
-  for(const r of rows) {
-    for(const c of cols) {
-      const cell = document.createElement('div');
-      cell.className='cell '+((r+c)%2===0?'light':'dark');
-      cell.dataset.r=r; cell.dataset.c=c;
-
-      // last move highlight
-      if(lastMove && ((lastMove.fr===r&&lastMove.fc===c)||(lastMove.tr===r&&lastMove.tc===c))) {
-        cell.classList.add('last-move');
-      }
-      // selected
-      if(selected && selected.r===r && selected.c===c) cell.classList.add('selected');
-      // valid moves
-      const hl = highlights.find(h=>h.r===r&&h.c===c);
-      if(hl) cell.classList.add(hl.capture?'valid-capture':'valid-move');
-
-      const piece = board[r][c];
-      if(piece) {
-        const span = document.createElement('span');
-        span.className='piece'+(piece.owner!==myRole?' opponent':'');
-        const el = ELEMENTS[piece.element];
-        span.textContent = piece.type==='king' ? el.king : el.emoji;
-        cell.appendChild(span);
-      }
-
-      cell.addEventListener('click', ()=>onCellClick(r,c));
-      boardEl.appendChild(cell);
-    }
-  }
-}
-
-function updateTurnIndicator(turn, myName, oppName) {
-  const el = document.getElementById('turn-indicator');
-  if(turn===myRole) {
-    el.textContent='YOUR TURN';
-    el.style.color='#c8b89a';
+function updateTurnIndicator(turn,myName,oppName){
+  const el=document.getElementById('turn-indicator');
+  if(!bothRevealed){el.textContent='SHOW YOUR SOLE';el.style.color='#c8a8e8';return;}
+  if(turn===myRole){
+    el.textContent='YOUR TURN';el.style.color='#c8b89a';
     document.getElementById('card-me').classList.add('active-player');
     document.getElementById('card-opp').classList.remove('active-player');
   } else {
-    el.textContent=`${oppName}'s turn`;
-    el.style.color='#555';
+    el.textContent=`${oppName}'s turn`;el.style.color='#555';
     document.getElementById('card-opp').classList.add('active-player');
     document.getElementById('card-me').classList.remove('active-player');
   }
 }
 
-function renderLog(log) {
-  const el = document.getElementById('log');
-  el.innerHTML = log.slice(-8).map(l=>`<p>${l}</p>`).join('');
-  el.scrollTop = el.scrollHeight;
+function renderBoard(){
+  const boardEl=document.getElementById('board');
+  boardEl.innerHTML='';
+  const rows=myRole===2?[...Array(7).keys()].reverse():[...Array(7).keys()];
+  const cols=myRole===2?[...Array(7).keys()].reverse():[...Array(7).keys()];
+  for(const r of rows){
+    for(const c of cols){
+      const cell=document.createElement('div');
+      cell.className='cell '+((r+c)%2===0?'light':'dark');
+      if(!bothRevealed) cell.classList.add('locked');
+      if(lastMove&&((lastMove.fr===r&&lastMove.fc===c)||(lastMove.tr===r&&lastMove.tc===c))) cell.classList.add('last-move');
+      if(selected&&selected.r===r&&selected.c===c) cell.classList.add('selected');
+      const hl=highlights.find(h=>h.r===r&&h.c===c);
+      if(hl) cell.classList.add(hl.capture?'valid-capture':'valid-move');
+      const piece=board[r][c];
+      if(piece){
+        const span=document.createElement('span');
+        if(piece.type==='king'&&!bothRevealed){
+          span.className='piece secret';span.textContent='♛';
+        } else {
+          span.className='piece'+(piece.owner!==myRole?' opponent':'');
+          span.textContent=piece.type==='king'
+            ?ELEMENTS[piece.element].emoji+'♔'
+            :ELEMENTS[piece.element].emoji;
+        }
+        cell.appendChild(span);
+      }
+      cell.addEventListener('click',()=>onCellClick(r,c));
+      boardEl.appendChild(cell);
+    }
+  }
 }
 
-// ─── INTERACTION ──────────────────────────────────────────────────
-function onCellClick(r,c) {
-  if(!myTurn) return;
-  const piece = board[r][c];
-
-  // Clicking a highlight → move
-  const hl = highlights.find(h=>h.r===r&&h.c===c);
-  if(hl && selected) {
-    doMove(selected.r, selected.c, r, c);
-    return;
-  }
-
-  // Clicking own piece → select
-  if(piece && piece.owner===myRole) {
-    selected={r,c};
-    highlights = validMoves(board,r,c,myRole);
-    renderBoard(null);
-    return;
-  }
-
-  // Clicking empty or opponent without selection → deselect
-  selected=null; highlights=[];
-  renderBoard(null);
+function renderLog(log){
+  const el=document.getElementById('log');
+  el.innerHTML=log.slice(-8).map(l=>`<p>${l}</p>`).join('');
+  el.scrollTop=el.scrollHeight;
 }
 
-async function doMove(fr,fc,tr,tc) {
-  const moving = board[fr][fc];
-  const target = board[tr][tc];
-  const newBoard = board.map(row=>row.map(c=>c?{...c}:null));
-
-  let logEntry = `${ELEMENTS[moving.element].emoji} ${moving.type} moved`;
-
-  if(target) {
-    logEntry = `${ELEMENTS[moving.element].emoji} captures ${ELEMENTS[target.element].emoji}`;
+function onCellClick(r,c){
+  if(!myTurn||!bothRevealed) return;
+  const piece=board[r][c];
+  const hl=highlights.find(h=>h.r===r&&h.c===c);
+  if(hl&&selected){doMove(selected.r,selected.c,r,c);return;}
+  if(piece&&piece.owner===myRole){
+    selected={r,c};highlights=validMoves(board,r,c,myRole);renderBoard();return;
   }
+  selected=null;highlights=[];renderBoard();
+}
 
-  newBoard[tr][tc] = moving;
-  newBoard[fr][fc] = null;
-
-  // Check win — opponent king captured
-  let winner = null;
-  if(target && target.type==='king') {
-    winner = myRole;
-    logEntry += ' — KING CAPTURED!';
-  }
-
-  const snap = await getDoc(doc(db,'rooms',roomId));
-  const data = snap.data();
-  const log = [...(data.log||[]), logEntry];
-
+async function doMove(fr,fc,tr,tc){
+  const moving=board[fr][fc],target=board[tr][tc];
+  const newBoard=board.map(row=>row.map(c=>c?{...c}:null));
+  let logEntry=target
+    ?`${ELEMENTS[moving.element].emoji} captures ${ELEMENTS[target.element].emoji}`
+    :`${ELEMENTS[moving.element].emoji} ${moving.type} moved`;
+  newBoard[tr][tc]=moving;newBoard[fr][fc]=null;
+  let winner=null;
+  if(target&&target.type==='king'){winner=myRole;logEntry+=' — KING CAPTURED! ⚔️';}
+  const snap=await getDoc(doc(db,'rooms',roomId));
+  const log=[...(snap.data().log||[]),logEntry];
   await updateDoc(doc(db,'rooms',roomId),{
-    board: JSON.stringify(newBoard),
-    turn: myRole===1 ? 2 : 1,
-    lastMove:{fr,fc,tr,tc},
-    log: log.slice(-20),
-    winner: winner
+    board:JSON.stringify(newBoard),turn:myRole===1?2:1,
+    lastMove:{fr,fc,tr,tc},log:log.slice(-20),winner
   });
-
-  selected=null; highlights=[];
+  selected=null;highlights=[];
 }
 
-// ─── GAME OVER ────────────────────────────────────────────────────
-function showGameOver(data) {
-  const isWinner = data.winner === myRole;
-  document.getElementById('go-title').textContent = isWinner ? 'VICTORY' : 'DEFEAT';
-  document.getElementById('go-sub').textContent = isWinner
-    ? 'You captured the enemy King'
-    : 'Your King has fallen';
+function showGameOver(data){
+  const isWinner=data.winner===myRole;
+  document.getElementById('go-title').textContent=isWinner?'VICTORY':'DEFEAT';
+  document.getElementById('go-sub').textContent=isWinner?'You captured the enemy King':'Your King has fallen';
   document.getElementById('game-over').style.display='flex';
 }
 
-// ─── LEAVE ────────────────────────────────────────────────────────
-window.leaveRoom = async function() {
+window.leaveRoom=async function(){
   if(unsub) unsub();
-  if(roomId) {
-    try { await deleteDoc(doc(db,'rooms',roomId)); } catch(e){}
-  }
+  if(roomId){try{await deleteDoc(doc(db,'rooms',roomId));}catch(e){}}
   leaveCleanup();
 };
 
-function leaveCleanup() {
-  roomId=null; myRole=null; myElement=null; selectedElement=null;
-  board=[]; selected=null; highlights=[]; myTurn=false;
+function leaveCleanup(){
+  roomId=null;myRole=null;myElement=null;selectedElement=null;
+  board=[];selected=null;highlights=[];myTurn=false;bothRevealed=false;lastMove=null;
   document.getElementById('lobby').style.display='flex';
   document.getElementById('room-info').style.display='none';
   document.getElementById('element-picker').style.display='none';
   document.getElementById('game-area').style.display='none';
   document.getElementById('game-over').style.display='none';
+  document.getElementById('reveal-overlay').style.display='none';
+  document.getElementById('reveal-banner').style.display='none';
+  const btn=document.getElementById('reveal-btn');
+  btn.disabled=false;btn.textContent='♛ Show My King\'s Sole';
+  document.getElementById('reveal-status').textContent='';
   document.getElementById('room-input').value='';
   document.querySelectorAll('.element-btn').forEach(b=>b.classList.remove('selected'));
 }
 
-// ─── UTILS ────────────────────────────────────────────────────────
-function msg(text, type='') {
-  const el = document.getElementById('msg');
-  el.textContent=text;
-  el.className = type;
+function msg(text,type=''){
+  const el=document.getElementById('msg');el.textContent=text;el.className=type;
 }
-
 </script>
 </body>
 </html>
